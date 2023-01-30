@@ -27,20 +27,26 @@ function SignIn() {
         <Text style={styles.label}>이메일</Text>
         <TextInput
           style={styles.textInput}
-          placeholder="이메일을 입력해주세요."
+          value={email}
           onChangeText={onChangeEmail}
+          placeholder="이메일을 입력해주세요."
           keyboardType="email-address"
-          returnKeyType="done"
+          importantForAutofill="yes"
+          autoComplete="email"
+          textContentType="emailAddress"
         />
       </View>
       <View style={styles.inputBox}>
         <Text style={styles.label}>비밀번호</Text>
         <TextInput
           style={styles.textInput}
-          placeholder="비밀번호를 입력해주세요."
+          value={password}
           onChangeText={onChangePassword}
+          placeholder="비밀번호를 입력해주세요."
           secureTextEntry
-          returnKeyType="done"
+          importantForAutofill="yes"
+          autoComplete="password"
+          textContentType="password"
         />
       </View>
       <View style={styles.buttonZone}>
