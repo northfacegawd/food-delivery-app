@@ -1,10 +1,10 @@
 import {useCallback} from 'react';
 import {io, Socket} from 'socket.io-client';
-import Config from 'react-native-config';
+// import Config from 'react-native-config';
 
 let socket: Socket | undefined;
 
-const useSocket = (): [Socket | undefined, () => void] => {
+const useSocket = (): [typeof socket, () => void] => {
   const disconnect = useCallback(() => {
     if (!socket) return;
     socket.disconnect();
@@ -12,7 +12,7 @@ const useSocket = (): [Socket | undefined, () => void] => {
   }, []);
 
   if (!socket) {
-    socket = io(Config.API_URL, {
+    socket = io('http://localhost:3105', {
       transports: ['websocket'],
     });
   }

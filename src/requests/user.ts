@@ -29,3 +29,16 @@ export const signin = async (signInData: SignInData) => {
   const {data} = await axios.post<SignInResponse>('/login', {...signInData});
   return data.data;
 };
+
+export const logout = async (accessToken: string) => {
+  const {data} = await axios.post(
+    '/logout',
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+  return data;
+};

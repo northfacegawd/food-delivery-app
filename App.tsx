@@ -4,9 +4,9 @@ import store from './src/store';
 import AppInner from './AppInner';
 import {QueryClient, QueryClientProvider} from 'react-query';
 import axios from 'axios';
-import Config from 'react-native-config';
+// import Config from 'react-native-config';
 
-axios.defaults.baseURL = Config.API_URL;
+axios.defaults.baseURL = 'http://localhost:3105';
 
 function App() {
   const [queryClient] = useState(new QueryClient());
