@@ -2,16 +2,17 @@ import {Alert} from 'react-native';
 import {logout} from '../requests/user';
 import {useMutation} from 'react-query';
 import {isAxiosError} from 'axios';
-import {useNavigation} from '@react-navigation/native';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/reducer';
+import {RootStackParamList} from '../../AppInner';
 
 const useSignOut = () => {
   const accessToken = useSelector((state: RootState) => state.user.accessToken);
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const dispatch = useAppDispatch();
 
   const mutateFn = () => logout(accessToken);
@@ -27,7 +28,7 @@ const useSignOut = () => {
         }),
       );
       await EncryptedStorage.removeItem('refreshToken');
-      navigation.navigate('SignIn' as never);
+      navigation.navigate('SignIn');
     },
     onError: error => {
       if (isAxiosError(error)) {

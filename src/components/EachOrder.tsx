@@ -12,7 +12,7 @@ interface EachOrderProps {
 function EachOrder({item}: EachOrderProps) {
   const dispatch = useAppDispatch();
   const [detail, showDetail] = useState(false);
-  const {mutate: accept} = useAcceptOrder(item.orderId);
+  const {mutate: accept, isLoading} = useAcceptOrder(item.orderId);
 
   const onReject = useCallback(() => {
     dispatch(orderSlice.actions.rejectOrder(item.orderId));
@@ -45,10 +45,16 @@ function EachOrder({item}: EachOrderProps) {
             <Text>네이버맵이 들어갈 장소</Text>
           </View>
           <View style={styles.buttonWrapper}>
-            <Pressable onPress={() => accept()} style={styles.acceptButton}>
+            <Pressable
+              disabled={isLoading}
+              onPress={() => accept()}
+              style={styles.acceptButton}>
               <Text style={styles.buttonText}>수락</Text>
             </Pressable>
-            <Pressable onPress={onReject} style={styles.rejectButton}>
+            <Pressable
+              disabled={isLoading}
+              onPress={onReject}
+              style={styles.rejectButton}>
               <Text style={styles.buttonText}>거절</Text>
             </Pressable>
           </View>

@@ -1,11 +1,12 @@
 import {Alert} from 'react-native';
 import {SignUpData, signup} from '../requests/user';
 import {useMutation} from 'react-query';
-import {useNavigation} from '@react-navigation/native';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {isAxiosError} from 'axios';
+import {RootStackParamList} from '../../AppInner';
 
 const useSignUp = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const mutateFn = (data: SignUpData) => signup(data);
 
   return useMutation(['/user'], mutateFn, {
