@@ -14,6 +14,8 @@ import {useAppDispatch} from './src/store';
 import userSlice from './src/slices/user';
 import {NavigationContainer} from '@react-navigation/native';
 import {SignInResponse} from './src/requests/user';
+import {Order} from './types/order';
+import orderSlice from './src/slices/order';
 
 export type LoggedInParamList = {
   Orders: undefined;
@@ -45,8 +47,8 @@ function AppInner() {
   }, [refresh]);
 
   useEffect(() => {
-    const callback = (data: any) => {
-      console.log(data);
+    const callback = (data: Order) => {
+      dispatch(orderSlice.actions.addOrder(data));
     };
     if (socket && isLoggedIn) {
       socket.emit('acceptOrder', 'hello');
@@ -57,7 +59,7 @@ function AppInner() {
         socket.off('order', callback);
       }
     };
-  }, [isLoggedIn, socket]);
+  }, [isLoggedIn, socket, dispatch]);
 
   useEffect(() => {
     if (!isLoggedIn) {
