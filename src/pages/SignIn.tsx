@@ -8,7 +8,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import {RootStackParamList} from '../../App';
+import {RootStackParamList} from '../../AppInner';
 
 interface SignInScreenProps
   extends NativeStackScreenProps<RootStackParamList, 'SignIn'> {}
