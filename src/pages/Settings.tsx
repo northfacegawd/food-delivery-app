@@ -1,27 +1,33 @@
-import React, {useCallback} from 'react';
+import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {useSelector} from 'react-redux';
 import {RootState} from '../store/reducer';
 import useSignOut from '../hooks/useSignOut';
+import useMoney from '../hooks/useMoney';
 
 function Settings() {
-  const accessToken = useSelector((state: RootState) => state.user.accessToken);
-
-  const {mutate} = useSignOut();
-
-  const onLogout = useCallback(() => {
-    mutate(accessToken);
-  }, [accessToken, mutate]);
+  const name = useSelector((state: RootState) => state.user.name);
+  const {data: money} = useMoney();
+  const {mutate: logout} = useSignOut();
 
   return (
     <View>
+      <View style={styles.moneyZone}>
+        <Text style={styles.moneyText}>
+          {name}님의 수익금{' '}
+          <Text style={styles.money}>
+            {(money ?? 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          </Text>
+          원
+        </Text>
+      </View>
       <View style={styles.buttonZone}>
         <Pressable
           style={StyleSheet.compose(
             styles.loginButton,
             styles.loginButtonActive,
           )}
-          onPress={onLogout}>
+          onPress={() => logout()}>
           <Text style={styles.loginButtonText}>로그아웃</Text>
         </Pressable>
       </View>
@@ -30,6 +36,15 @@ function Settings() {
 }
 
 const styles = StyleSheet.create({
+  moneyZone: {
+    padding: 20,
+  },
+  moneyText: {
+    fontSize: 16,
+  },
+  money: {
+    fontWeight: 'bold',
+  },
   buttonZone: {
     alignItems: 'center',
     paddingTop: 20,

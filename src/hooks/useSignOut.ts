@@ -6,12 +6,15 @@ import {useNavigation} from '@react-navigation/native';
 import {useAppDispatch} from '../store';
 import userSlice from '../slices/user';
 import EncryptedStorage from 'react-native-encrypted-storage';
+import {useSelector} from 'react-redux';
+import {RootState} from '../store/reducer';
 
 const useSignOut = () => {
+  const accessToken = useSelector((state: RootState) => state.user.accessToken);
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
 
-  const mutateFn = (accessToken: string) => logout(accessToken);
+  const mutateFn = () => logout(accessToken);
 
   return useMutation(['/signout'], mutateFn, {
     onSuccess: async () => {
@@ -21,6 +24,7 @@ const useSignOut = () => {
           name: '',
           email: '',
           accessToken: '',
+          money: 0,
         }),
       );
       await EncryptedStorage.removeItem('refreshToken');
