@@ -6027,6 +6027,11 @@ react-native-config@^1.5.0:
   resolved "https://registry.npmjs.org/react-native-config/-/react-native-config-1.5.0.tgz"
   integrity sha512-slecooA/0tCwhb+RuWEbwLqtKirGh9vWPRpgDfH7uPAraCciqHNH2XjS9ylW+Spn4FUrHg5KWTqUGs9BdBADHg==
 
+react-native-encrypted-storage@^4.0.3:
+  version "4.0.3"
+  resolved "https://registry.npmjs.org/react-native-encrypted-storage/-/react-native-encrypted-storage-4.0.3.tgz"
+  integrity sha512-0pJA4Aj2S1PIJEbU7pN/Qvf7JIJx3hFywx+i+bLHtgK0/6Zryf1V2xVsWcrD50dfiu3jY1eN2gesQ5osGxE7jA==
+
 react-native-flipper@^0.177.0, react-native-flipper@^0.37.0, react-native-flipper@>=0.100.0:
   version "0.177.0"
   resolved "https://registry.npmjs.org/react-native-flipper/-/react-native-flipper-0.177.0.tgz"

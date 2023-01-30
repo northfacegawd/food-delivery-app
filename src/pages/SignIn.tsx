@@ -1,5 +1,5 @@
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Alert,
   Pressable,
@@ -9,33 +9,50 @@ import {
   View,
 } from 'react-native';
 import {RootStackParamList} from '../../AppInner';
+import useSignIn from '../hooks/useSignIn';
+import userSlice from '../slices/user';
+import {useAppDispatch} from '../store';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 interface SignInScreenProps
   extends NativeStackScreenProps<RootStackParamList, 'SignIn'> {}
 
 function SignIn({navigation}: SignInScreenProps) {
+  const dispatch = useAppDispatch();
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const passwordRef = useRef<TextInput>(null);
+  const {isLoading, data, mutate} = useSignIn();
 
   const onChangeEmail = useCallback((text: string) => setEmail(text), []);
   const onChangePassword = useCallback((text: string) => setPassword(text), []);
 
-  const onSubmit = useCallback(() => {
-    if (!email.trim()) {
+  const onSubmit = useCallback(async () => {
+    if (!email || !email.trim()) {
       return Alert.alert('알림', '이메일을 입력해주세요.');
     }
-    if (!password.trim()) {
+    if (!password || !password.trim()) {
       return Alert.alert('알림', '비밀번호를 입력해주세요.');
     }
-    Alert.alert('알림', '로그인 되었습니다.');
-  }, [email, password]);
-
+    mutate({email, password});
+  }, [email, password, mutate]);
   const toSignUp = useCallback(() => {
     navigation.navigate('SignUp');
   }, [navigation]);
 
-  const canGoNext = email.trim() && password.trim();
+  useEffect(() => {
+    if (!data) return;
+    (async () => {
+      dispatch(
+        userSlice.actions.setUser({
+          ...data,
+        }),
+      );
+      await EncryptedStorage.setItem('refreshToken', data.refreshToken);
+    })();
+  }, [data, dispatch]);
+
+  const canGoNext = email.trim() && password.trim() && !isLoading;
 
   return (
     <View style={styles.inputWrapper}>
