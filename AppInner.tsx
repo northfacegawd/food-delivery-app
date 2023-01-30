@@ -16,6 +16,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {SignInResponse} from './src/requests/user';
 import {Order} from './types/order';
 import orderSlice from './src/slices/order';
+import axios from 'axios';
 
 export type LoggedInParamList = {
   Orders: undefined;
@@ -35,12 +36,30 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 function AppInner() {
   const dispatch = useAppDispatch();
   const isLoggedIn = useSelector((state: RootState) => !!state.user.email);
-  const {mutate: refresh} = useRefreshToken({
+  const {mutate: refresh, mutateAsync: refreshAsync} = useRefreshToken({
     onSuccess: (response: SignInResponse['data']) => {
       dispatch(userSlice.actions.setUser({...response}));
     },
   });
   const [socket, disconnect] = useSocket();
+
+  // aioxs 인터셉터를 사용하여 토큰 만료시 토큰 재발급
+  useEffect(() => {
+    axios.interceptors.response.use(
+      response => response,
+      async error => {
+        const {config, response} = error;
+        const originalRequest = config;
+        if (response.status === 419 && response?.data.code === 'expired') {
+          const data = await refreshAsync();
+          if (!data) return;
+          originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
+          return axios(originalRequest);
+        }
+        return Promise.reject(error);
+      },
+    );
+  }, [refreshAsync]);
 
   useEffect(() => {
     refresh();
