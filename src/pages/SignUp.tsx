@@ -1,5 +1,6 @@
 import React, {useCallback, useRef, useState} from 'react';
 import {
+  ActivityIndicator,
   Alert,
   Platform,
   Pressable,
@@ -22,7 +23,7 @@ function SignUp({}: SignUpScreenProps) {
   const emailRef = useRef<TextInput | null>(null);
   const nameRef = useRef<TextInput | null>(null);
   const passwordRef = useRef<TextInput | null>(null);
-  const {mutate} = useSignUp();
+  const {mutate, isLoading} = useSignUp();
 
   const onChangeEmail = useCallback(
     (text: string) => setEmail(text.trim()),
@@ -60,7 +61,7 @@ function SignUp({}: SignUpScreenProps) {
     mutate({email, name, password});
   }, [email, name, password, mutate]);
 
-  const canGoNext = email && name && password;
+  const canGoNext = email && name && password && !isLoading;
   return (
     <DismissKeyboardView>
       <View style={styles.inputWrapper}>
@@ -121,7 +122,11 @@ function SignUp({}: SignUpScreenProps) {
           }
           disabled={!canGoNext}
           onPress={onSubmit}>
-          <Text style={styles.loginButtonText}>회원가입</Text>
+          {isLoading ? (
+            <ActivityIndicator color="blue" />
+          ) : (
+            <Text style={styles.loginButtonText}>회원가입</Text>
+          )}
         </Pressable>
       </View>
     </DismissKeyboardView>
