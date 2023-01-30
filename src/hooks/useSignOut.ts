@@ -24,7 +24,6 @@ const useSignOut = () => {
           name: '',
           email: '',
           accessToken: '',
-          money: 0,
         }),
       );
       await EncryptedStorage.removeItem('refreshToken');
