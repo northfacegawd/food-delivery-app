@@ -11,6 +11,7 @@ import {
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../../AppInner';
 import DismissKeyboardView from '../components/DismissKeyboardView';
+import useSignUp from '../hooks/useSignUp';
 
 type SignUpScreenProps = NativeStackScreenProps<RootStackParamList, 'SignUp'>;
 
@@ -21,6 +22,7 @@ function SignUp({}: SignUpScreenProps) {
   const emailRef = useRef<TextInput | null>(null);
   const nameRef = useRef<TextInput | null>(null);
   const passwordRef = useRef<TextInput | null>(null);
+  const {mutate} = useSignUp();
 
   const onChangeEmail = useCallback(
     (text: string) => setEmail(text.trim()),
@@ -55,8 +57,8 @@ function SignUp({}: SignUpScreenProps) {
         '비밀번호는 영문,숫자,특수문자($@^!%*#?&)를 모두 포함하여 8자 이상 입력해야합니다.',
       );
     }
-    Alert.alert('알림', '회원가입 되었습니다.');
-  }, [email, name, password]);
+    mutate({email, name, password});
+  }, [email, name, password, mutate]);
 
   const canGoNext = email && name && password;
   return (
