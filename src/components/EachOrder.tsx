@@ -1,46 +1,18 @@
-import {Alert, Pressable, StyleSheet, Text, View} from 'react-native';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 import React, {useCallback, useState} from 'react';
 import orderSlice from '../slices/order';
 import {useAppDispatch} from '../store';
 import getDistanceFromLatLonInKm from '../util';
-import axios, {AxiosError} from 'axios';
-import {useSelector} from 'react-redux';
-import {RootState} from '../store/reducer';
-import Config from 'react-native-config';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {LoggedInParamList} from '../../AppInner';
 import {Order} from '../../types/order';
+import useAcceptOrder from '../hooks/useAcceptOrder';
 
 interface EachOrderProps {
   item: Order;
 }
 function EachOrder({item}: EachOrderProps) {
-  const navigation = useNavigation<NavigationProp<LoggedInParamList>>();
   const dispatch = useAppDispatch();
-  const accessToken = useSelector((state: RootState) => state.user.accessToken);
   const [detail, showDetail] = useState(false);
-
-  const onAccept = useCallback(async () => {
-    if (!accessToken) {
-      return;
-    }
-    try {
-      await axios.post(
-        `${Config.API_URL}/accept`,
-        {orderId: item.orderId},
-        {headers: {authorization: `Bearer ${accessToken}`}},
-      );
-      dispatch(orderSlice.actions.acceptOrder(item.orderId));
-      navigation.navigate('Delivery');
-    } catch (error) {
-      let errorResponse = (error as AxiosError).response;
-      if (errorResponse?.status === 400) {
-        // 타인이 이미 수락한 경우
-        // Alert.alert('알림', errorResponse.data.message);
-        dispatch(orderSlice.actions.rejectOrder(item.orderId));
-      }
-    }
-  }, [navigation, dispatch, item, accessToken]);
+  const {mutate: accept} = useAcceptOrder(item.orderId);
 
   const onReject = useCallback(() => {
     dispatch(orderSlice.actions.rejectOrder(item.orderId));
@@ -73,7 +45,7 @@ function EachOrder({item}: EachOrderProps) {
             <Text>네이버맵이 들어갈 장소</Text>
           </View>
           <View style={styles.buttonWrapper}>
-            <Pressable onPress={onAccept} style={styles.acceptButton}>
+            <Pressable onPress={() => accept()} style={styles.acceptButton}>
               <Text style={styles.buttonText}>수락</Text>
             </Pressable>
             <Pressable onPress={onReject} style={styles.rejectButton}>
