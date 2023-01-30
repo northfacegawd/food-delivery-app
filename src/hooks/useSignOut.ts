@@ -13,7 +13,7 @@ const useSignOut = () => {
 
   const mutateFn = (accessToken: string) => logout(accessToken);
 
-  return useMutation(['/login'], mutateFn, {
+  return useMutation(['/signout'], mutateFn, {
     onSuccess: async () => {
       Alert.alert('알림', '로그아웃 되었습니다.');
       dispatch(

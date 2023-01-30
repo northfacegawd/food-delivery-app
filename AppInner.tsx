@@ -1,5 +1,4 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React, {useEffect} from 'react';
 import Orders from './src/pages/Orders';
@@ -10,6 +9,11 @@ import SignUp from './src/pages/SignUp';
 import {useSelector} from 'react-redux';
 import {RootState} from './src/store/reducer';
 import useSocket from './src/hooks/useSocket';
+import useRefreshToken from './src/hooks/useRefreshToken';
+import {useAppDispatch} from './src/store';
+import userSlice from './src/slices/user';
+import {NavigationContainer} from '@react-navigation/native';
+import {SignInResponse} from './src/requests/user';
 
 export type LoggedInParamList = {
   Orders: undefined;
@@ -27,29 +31,36 @@ const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function AppInner() {
+  const dispatch = useAppDispatch();
   const isLoggedIn = useSelector((state: RootState) => !!state.user.email);
-
+  const {mutate: refresh} = useRefreshToken({
+    onSuccess: (response: SignInResponse['data']) => {
+      dispatch(userSlice.actions.setUser({...response}));
+    },
+  });
   const [socket, disconnect] = useSocket();
 
   useEffect(() => {
-    const helloCallback = (data: any) => {
+    refresh();
+  }, [refresh]);
+
+  useEffect(() => {
+    const callback = (data: any) => {
       console.log(data);
     };
     if (socket && isLoggedIn) {
-      console.log(socket);
-      socket.emit('login', 'hello');
-      socket.on('hello', helloCallback);
+      socket.emit('acceptOrder', 'hello');
+      socket.on('order', callback);
     }
     return () => {
       if (socket) {
-        socket.off('hello', helloCallback);
+        socket.off('order', callback);
       }
     };
   }, [isLoggedIn, socket]);
 
   useEffect(() => {
     if (!isLoggedIn) {
-      console.log('!isLoggedIn', !isLoggedIn);
       disconnect();
     }
   }, [isLoggedIn, disconnect]);

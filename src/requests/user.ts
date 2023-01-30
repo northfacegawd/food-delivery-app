@@ -42,3 +42,13 @@ export const logout = async (accessToken: string) => {
   );
   return data;
 };
+
+export const refresh = async (refreshToken: string) => {
+  const {data} = await axios.post<SignInResponse>(
+    '/refreshToken',
+    {},
+    {headers: {Authorization: `Bearer ${refreshToken}`}},
+  );
+
+  return data.data;
+};
